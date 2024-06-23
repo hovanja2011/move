@@ -1,0 +1,153 @@
+
+# Authorization REST API
+
+POST /register
+{
+	phone, pasword, name, role  
+}
+Response:
+- 201 - Created
+- 400 - Bad Request запрос не понят
+- 500
+{
+	error_message: message  
+}
+
+POST /login
+{
+	phone,  
+	password  
+}
+Response:
+- 200
+{
+    access_token,
+    refresh_token,
+    expires_in 
+}
+- 401 Unauthorized
+- 500
+{
+	error_message: message  
+}
+
+# Driver REST API
+
+GET /drives
+
+Header:
+ - x-auth-token: $token
+по этому токену каждый запрос проверяется на "легальность" (reddis)
+header нужен и для пассажира, и для водителя, укажем один раз тут
+{
+	driver_id:
+    status: active / completed / arcived  
+}
+- 200
+- 401 (access denied)
+- 500
+
+{
+	drives : [
+		{
+			id:1,
+			adFrom,
+			adTo,
+			date,
+			dtStart,
+			nRate
+		}	
+	],
+	page_index: 0,
+	page_count: 10
+	
+}
+
+GET /drives/${id}
+
+- 200
+- 400
+- 401 (access denied)
+- 404
+- 500
+
+ResponseBody
+{
+	id:1,
+	driver:{
+		id, name	
+	}
+	adFrom,
+	adTo,
+	date,
+	dtStart,
+	nRate,
+    passenger:{
+        id, name
+    }
+}	
+
+POST /drive
+
+{
+	adFrom, adTo, dtStart, dtFinish
+}
+
+Response:
+- 200, {id}
+- 400
+- 401 
+
+POST /passenger/${id}/accept
+
+POST /passenger/${id}/deny
+POST /drive/${id}/deny
+{
+	reason
+}
+Response:
+- 200
+- 500
+
+
+# Passenger REST API
+
+GET /drives?status=active
+
+Response:
+{
+	drives : [
+		{
+			id:1,
+			driverName
+			adFrom,
+			adTo,
+			date,
+			dtStart,
+			nRate
+		}	
+	],
+	page_index: 0,
+	page_count: 10
+	
+}
+
+POST /drive/${id}/submit
+
+Response:
+- 200
+- 400
+- 401 (access denied)
+- 403 (forbidden)
+- 500
+
+POST /drive/${id}/submit
+{
+	reason
+}
+Response:
+- 200
+- 400
+- 401 (access denied)
+- 403 (forbidden)
+- 500
